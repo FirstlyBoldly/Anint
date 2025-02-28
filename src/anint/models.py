@@ -2,7 +2,7 @@
 
 # Anint
 from .exceptions import TranslationError
-from .utils import _parse_key
+from .utils import parse_key
 
 
 class Translator:
@@ -44,7 +44,7 @@ class Translator:
         :raise TranslationError: If the key raises a KeyError or if the referred value is not of type str.
         """
         try:
-            parsed_keys: list[str] = _parse_key(key)
+            parsed_keys: list[str] = parse_key(key)
             value: dict = self.translations[self.locale]
             for parsed_key in parsed_keys:
                 value = value[parsed_key]
