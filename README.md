@@ -1,2 +1,2 @@
 # Anint
-Ankha's Internationalization and Localization for Python Projects
+Ankha's Internationalization and Localization for Python
