@@ -1,5 +1,8 @@
 """Models for Anint."""
 
+# Built-ins
+from typing import Optional
+
 # Anint
 from .exceptions import TranslationError
 from .utils import parse_key
@@ -9,7 +12,7 @@ class Translator:
     """Translator class."""
 
     def __init__(
-        self, locales: list[str], locale: str, fallback: str, translations: dict
+        self, locales: list[str], locale: Optional[str], fallback: Optional[str], translations: dict
     ) -> None:
         """Initialize Translator class object.
 
@@ -21,7 +24,7 @@ class Translator:
         """
         self.locales: list[str] = locales
         self.locale: str = locale
-        self.fallback: str = fallback
+        self.fallback: Optional[str] = fallback
         self.translations: dict = translations
 
     def set_locale(self, locale: str) -> None:
@@ -36,16 +39,17 @@ class Translator:
         else:
             raise ValueError(locale)
 
-    def get(self, key: str) -> str:
+    def get(self, key: str, override_locale: Optional[str] = None) -> str:
         """Parse the locale data as is for the specified key.
 
         :param str key: A string of dict keys combined by dots.
+        :param override_locale: Specify which locale to get the translation from. None by default.
         :return: The translation for the current specified language.
         :raise TranslationError: If the key raises a KeyError or if the referred value is not of type str.
         """
         try:
             parsed_keys: list[str] = parse_key(key)
-            value: dict = self.translations[self.locale]
+            value: dict = self.translations[override_locale or self.locale]
             for parsed_key in parsed_keys:
                 value = value[parsed_key]
 
@@ -63,5 +67,12 @@ class Translator:
         :param args: Passed onto the translation to be formatted if there are any placeholders.
         :return: The translation for the currently specified language setting.
         """
-        translation: str = self.get(key)
+        try:
+            translation: str = self.get(key)
+        except TranslationError:
+            if self.fallback:
+                translation: str = self.get(key, self.fallback)
+            else:
+                raise TranslationError(key)
+
         return translation.format(*args)

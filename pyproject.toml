@@ -1,6 +1,9 @@
 [project]
 name = "anint"
 version = "0.0.1"
+dependencies = [
+    "pyyaml",
+]
 authors = [
     { name = "Ankhbold Batbaatar", email = "ankhasgreens@gmail.com" },
 ]
