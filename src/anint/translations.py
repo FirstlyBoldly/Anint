@@ -4,6 +4,7 @@ __all__: list[str] = ["load", "get"]
 
 # Built-ins
 from typing import Any
+from pathlib import Path
 import json
 import os
 
@@ -14,7 +15,7 @@ import yaml
 from .utils import parse_key
 from .exceptions import TranslationError, MultipleSameLocaleError
 
-translations: dict[str, Any] = {}
+data: dict[str, Any] = {}
 
 
 def load_yaml(filename: str) -> dict[str, Any]:
@@ -27,23 +28,25 @@ def load_json(filename: str) -> dict[str, Any]:
         return json.load(file)
 
 
-def load(path_to_locale: str) -> None:
-    """Load the translation from the given path_to_locale.
+def load(path_to_locale_directory: str) -> None:
+    """Load the translation from the given path_to_locale_directory.
 
-    :param str path_to_locale: Path to the translation file or directory containing the translation file.
+    :param str path_to_locale_directory: Path to the translation file or directory containing the translation file.
     :return: None.
     :raise FileNotFoundError: If the requested file does not exist.
     """
-    filepath: str = os.path.basename(path_to_locale)
-    locale, extension = os.path.splitext(filepath)
-    if locale not in translations:
-        match extension:
-            case ".yaml":
-                translations[locale] = load_yaml(path_to_locale)
-            case ".json":
-                translations[locale] = load_json(path_to_locale)
-    else:
-        raise MultipleSameLocaleError(locale)
+    for filepath in os.listdir(path_to_locale_directory):
+        locale, extension = os.path.splitext(filepath)
+        path_to_locale: Path = Path(path_to_locale_directory, filepath)
+        extension = extension[1:]
+        if locale not in data:
+            match extension:
+                case "yaml":
+                    data[locale] = load_yaml(str(path_to_locale))
+                case "json":
+                    data[locale] = load_json(str(path_to_locale))
+        else:
+            raise MultipleSameLocaleError(locale)
 
 
 def get(locale: str, key: str) -> str:
@@ -56,7 +59,7 @@ def get(locale: str, key: str) -> str:
     """
     try:
         parsed_keys: list[str] = parse_key(key)
-        value: dict = translations[locale]
+        value: dict = data[locale]
         for parsed_key in parsed_keys:
             value = value[parsed_key]
 

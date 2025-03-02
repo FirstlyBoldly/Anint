@@ -1,6 +1,7 @@
 # Built-ins
 from re import split
-from os.path import split
+from os.path import splitext
+
 
 def parse_key(key: str) -> list[str]:
     """Break up key into a list seperated by dots."""
@@ -8,4 +9,8 @@ def parse_key(key: str) -> list[str]:
 
 
 def get_file_extension(filename: str) -> str:
-    return split(filename)[1][1:]
+    return splitext(filename)[1][1:]
+
+
+def csv_to_list(list_string: str) -> list[str]:
+    return [element.strip() for element in list_string.split(",")]

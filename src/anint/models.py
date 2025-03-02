@@ -12,7 +12,11 @@ class Translator:
     """Translator class."""
 
     def __init__(
-        self, locales: list[str], locale: Optional[str], fallback: Optional[str], translations: dict
+        self,
+        locales: list[str],
+        locale: Optional[str],
+        fallback: Optional[str],
+        translations: dict,
     ) -> None:
         """Initialize Translator class object.
 
