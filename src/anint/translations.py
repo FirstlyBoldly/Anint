@@ -15,16 +15,27 @@ import yaml
 from .utils import parse_key
 from .exceptions import TranslationError, MultipleSameLocaleError
 
+# Storage dictionary.
 data: dict[str, Any] = {}
 
 
-def load_yaml(filename: str) -> dict[str, Any]:
-    with open(filename, "r") as file:
+def load_yaml(filepath: str) -> dict[str, Any]:
+    """Parse the given YAML file and return a dictionary.
+
+    :param filepath: Absolute path to the YAML file.
+    :return: Dictionary of the parsed YAML file.
+    """
+    with open(filepath, "r") as file:
         return yaml.safe_load(file)
 
 
-def load_json(filename: str) -> dict[str, Any]:
-    with open(filename, "r") as file:
+def load_json(filepath: str) -> dict[str, Any]:
+    """Parse the given JSON file and return a dictionary.
+
+    :param filepath: Absolute path to the JSON file.
+    :return: Dictionary of the parsed JSON file.
+    """
+    with open(filepath, "r") as file:
         return json.load(file)
 
 

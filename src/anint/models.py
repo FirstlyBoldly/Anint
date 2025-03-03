@@ -60,7 +60,11 @@ class Translator:
             if isinstance(value, str):
                 return value
             else:
-                raise TranslationError(key)
+                raise TranslationError(
+                    "{key} argument does not represent a localizable value".format(
+                        key=key
+                    )
+                )
         except KeyError:
             raise TranslationError(key)
 
@@ -72,11 +76,11 @@ class Translator:
         :return: The translation for the currently specified language setting.
         """
         try:
-            translation: str = self.get(key)
+            value: str = self.get(key)
         except TranslationError:
             if self.fallback:
-                translation: str = self.get(key, self.fallback)
+                value: str = self.get(key, self.fallback)
             else:
                 raise TranslationError(key)
 
-        return translation.format(*args)
+        return value.format(*args)
