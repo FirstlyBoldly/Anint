@@ -5,7 +5,7 @@ __all__: list[str] = ["data"]
 # Built-ins
 import configparser, tomllib, os
 from configparser import ConfigParser
-from typing import Any
+from typing import Any, Optional
 
 # Anint
 from .utils import get_file_extension, csv_to_list
@@ -13,24 +13,22 @@ from .exceptions import AnintConfigError
 from .constants import AnintDict
 
 
-def fetch_config_file() -> str:
+def fetch_config_file() -> Optional[str]:
     """Return the absolute path to the highest priority Anint configuration file.
 
     :return: Absolute path to the highest priority Anint configuration file.
     :raise AnintConfigError: If no matching config file is found.
     """
     for filepath in [
-        f"{AnintDict.ANINT}.ini",
-        f".{AnintDict.ANINT}.ini",
+        "{anint}.ini".format(anint=AnintDict.ANINT),
+        ".{anint}.ini".format(anint=AnintDict.ANINT),
         "pyproject.toml",
-        f"{AnintDict.ANINT}.cfg",
+        "{anint}.cfg".format(anint=AnintDict.ANINT),
     ]:
         if os.path.exists(filepath):
             return os.path.abspath(filepath)
     else:
-        raise AnintConfigError(
-            "No recognized Anint configuration file found. Refer to README for writing the configuration file."
-        )
+        return None
 
 
 def load_raw_ini(filepath: str) -> dict[str, Any]:
@@ -50,8 +48,8 @@ def load_raw_toml(filepath: str) -> dict[str, Any]:
     :param str filepath: Path to the .toml file.
     :return: Dictionary of the loaded values as is. *Beware that comma seperated values will not be converted to a list of elements.
     """
-    with open(filepath, "rb") as f:
-        return tomllib.load(f)[AnintDict.TOOL][AnintDict.ANINT]
+    with open(filepath, "rb") as file:
+        return tomllib.load(file)[AnintDict.TOOL][AnintDict.ANINT]
 
 
 def load_config() -> dict[str, Any]:

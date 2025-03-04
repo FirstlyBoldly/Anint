@@ -17,5 +17,4 @@ t: Callable[[str], str] = Translator(
     data[AnintDict.LOCALES],
     data[AnintDict.LOCALE],
     data[AnintDict.FALLBACKS],
-    translations.data,
 ).translate

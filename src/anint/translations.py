@@ -25,7 +25,7 @@ def load_yaml(filepath: str) -> dict[str, Any]:
     :param filepath: Absolute path to the YAML file.
     :return: Dictionary of the parsed YAML file.
     """
-    with open(filepath, "r") as file:
+    with open(filepath, "r", encoding="utf8") as file:
         return yaml.safe_load(file)
 
 
@@ -35,7 +35,7 @@ def load_json(filepath: str) -> dict[str, Any]:
     :param filepath: Absolute path to the JSON file.
     :return: Dictionary of the parsed JSON file.
     """
-    with open(filepath, "r") as file:
+    with open(filepath, "r", encoding="utf8") as file:
         return json.load(file)
 
 
@@ -77,6 +77,10 @@ def get(locale: str, key: str) -> str:
         if isinstance(value, str):
             return value
         else:
-            raise TranslationError(key)
+            raise TranslationError(
+                "{key} argument does not represent a localizable value".format(
+                    key=key
+                )
+            )
     except KeyError:
         raise TranslationError(key)
