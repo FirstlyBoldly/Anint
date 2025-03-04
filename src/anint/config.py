@@ -51,7 +51,7 @@ def load_raw_toml(filepath: str) -> dict[str, Any]:
     :return: Dictionary of the loaded values as is. *Beware that comma seperated values will not be converted to a list of elements.
     """
     with open(filepath, "rb") as f:
-        return tomllib.load(f)[AnintDict.ANINT]
+        return tomllib.load(f)[AnintDict.TOOL][AnintDict.ANINT]
 
 
 def load_config() -> dict[str, Any]:

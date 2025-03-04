@@ -29,9 +29,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 
-#[project.urls]
-#Homepage = ""
-#Issues = ""
+[project.urls]
+Homepage = "https://github.com/FirstlyBoldly/Anint"
+Issues = "https://github.com/FirstlyBoldly/Anint/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]

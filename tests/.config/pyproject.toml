@@ -1,4 +1,4 @@
-[anint]
+[tool.anint]
 locales = ["mn", "en", "jp"]
 locale = "jp"
 fallbacks = "en"
