@@ -20,7 +20,6 @@ def fetch_config_file() -> str:
     :raise AnintConfigError: If no matching config file is found.
     """
     for filepath in [
-        f"./tests/.config/.{AnintDict.ANINT}.ini",
         f"{AnintDict.ANINT}.ini",
         f".{AnintDict.ANINT}.ini",
         "pyproject.toml",
