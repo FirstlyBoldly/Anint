@@ -39,7 +39,10 @@ def load_raw_ini(filepath: str) -> dict[str, Any]:
     """
     config_data: ConfigParser = configparser.ConfigParser()
     config_data.read(filepath)
-    return dict(config_data.items(AnintDict.ANINT))
+    try:
+        return dict(config_data.items(AnintDict.ANINT))
+    except configparser.NoSectionError:
+        return {}
 
 
 def load_raw_toml(filepath: str) -> dict[str, Any]:
@@ -48,8 +51,11 @@ def load_raw_toml(filepath: str) -> dict[str, Any]:
     :param str filepath: Path to the .toml file.
     :return: Dictionary of the loaded values as is. *Beware that comma seperated values will not be converted to a list of elements.
     """
-    with open(filepath, "rb") as file:
-        return tomllib.load(file)[AnintDict.TOOL][AnintDict.ANINT]
+    try:
+        with open(filepath, "rb") as file:
+            return tomllib.load(file)[AnintDict.TOOL][AnintDict.ANINT]
+    except KeyError:
+        return {}
 
 
 def load_config() -> dict[str, Any]:
