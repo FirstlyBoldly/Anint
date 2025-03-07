@@ -73,21 +73,20 @@ def load_config() -> dict[str, Any]:
     :return: Dictionary of the loaded Anint configuration. *Expects all keys to have a corresponding value, will assign empty values otherwise.
     :raise AnintConfigError: If the loaded file is not a .ini or .cfg or .toml file.
     """
+    config_data: dict[str, Any] = {}
     if filepath := fetch_config_file():
         filename: str = os.path.basename(filepath)
         extension: str = get_file_extension(filename)
         if extension == "ini" or extension == "cfg":
-            config_data: dict[str, Any] = load_raw_ini(filepath)
+            config_data = load_raw_ini(filepath)
         elif extension == "toml":
-            config_data: dict[str, Any] = load_raw_toml(filepath)
+            config_data = load_raw_toml(filepath)
         else:
             raise AnintConfigError(
                 "The following {filename} is not a recognized configuration file format.".format(
                     filename=filename
                 )
             )
-    else:
-        config_data: dict[str, Any] = {}
 
     # Normalize loaded config data.
     config_data[AnintDict.LOCALES] = csv_to_list(config_data.get(AnintDict.LOCALES, ""))

@@ -78,9 +78,7 @@ def get(locale: str, key: str) -> str:
             return value
         else:
             raise TranslationError(
-                "{key} argument does not represent a localizable value".format(
-                    key=key
-                )
+                "{key} argument does not represent a localizable value".format(key=key)
             )
     except KeyError:
         raise TranslationError(key)

@@ -14,8 +14,8 @@ class Translator:
     def __init__(
         self,
         locales: list[str],
-        locale: Optional[str],
-        fallback: Optional[str],
+        locale: Optional[str] = None,
+        fallback: Optional[str] = None,
     ) -> None:
         """Initialize Translator class object.
 
@@ -25,7 +25,7 @@ class Translator:
         :return: None.
         """
         self.locales: list[str] = locales
-        self.locale: str = locale
+        self.locale: Optional[str] = locale
         self.fallback: Optional[str] = fallback
 
     def set_locale(self, locale: str) -> None:
@@ -47,11 +47,16 @@ class Translator:
         :param args: Passed onto the translation to be formatted if there are any placeholders.
         :return: The translation for the currently specified language setting.
         """
+        if not self.locale:
+            raise ValueError(
+                "Not specified locale exists. Set a locale to localize in."
+            )
+
         try:
             value: str = translations.get(self.locale, key)
         except TranslationError:
             if self.fallback:
-                value: str = translations.get(self.fallback, key)
+                value = translations.get(self.fallback, key)
             else:
                 raise TranslationError(key)
 
