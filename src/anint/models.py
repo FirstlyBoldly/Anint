@@ -15,18 +15,18 @@ class Translator:
         self,
         locales: list[str],
         locale: Optional[str] = None,
-        fallback: Optional[str] = None,
+        fallbacks: Optional[list[str]] = None,
     ) -> None:
         """Initialize Translator class object.
 
         :param locales: List of available locales.
         :param locale: Specified locale.
-        :param fallback: Fallback locale.
+        :param fallbacks: Fallback locales.
         :return: None.
         """
         self.locales: list[str] = locales
         self.locale: Optional[str] = locale
-        self.fallback: Optional[str] = fallback
+        self.fallbacks: Optional[list[str]] = fallbacks
 
     def set_locale(self, locale: str) -> None:
         """Change the locale setting to the specified locale.
@@ -55,8 +55,15 @@ class Translator:
         try:
             value: str = translations.get(self.locale, key)
         except TranslationError:
-            if self.fallback:
-                value = translations.get(self.fallback, key)
+            if not self.fallbacks:
+                raise TranslationError(key)
+
+            for fallback in self.fallbacks:
+                try:
+                    value = translations.get(fallback, key)
+                    break
+                except TranslationError:
+                    pass
             else:
                 raise TranslationError(key)
 

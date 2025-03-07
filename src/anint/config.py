@@ -1,6 +1,6 @@
 """Loaded data from the Anint configuration file if any."""
 
-__all__: list[str] = ["data"]
+__all__: list[str] = ["data", "instance_data"]
 
 # Built-ins
 import configparser, tomllib, os
@@ -106,3 +106,8 @@ def load_config() -> dict[str, Any]:
 
 
 data: dict[str, Any] = load_config()
+instance_data: dict[str, Any] = {
+    key: value
+    for key, value in data.items()
+    if key in [AnintDict.LOCALES, AnintDict.LOCALE, AnintDict.FALLBACKS]
+}
