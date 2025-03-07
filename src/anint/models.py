@@ -55,6 +55,9 @@ class Translator:
         try:
             value: str = translations.get(self.locale, key)
         except TranslationError:
+            if not self.fallbacks:
+                raise TranslationError(key)
+
             for fallback in self.fallbacks:
                 try:
                     value = translations.get(fallback, key)
