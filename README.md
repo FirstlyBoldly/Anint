@@ -14,7 +14,7 @@ Python 3.11.x or newer.
 
 `pip install anint`
 
-# Configuration
+# Setup
 
 ## Via Configuration Files (Recommended)
 
@@ -39,6 +39,8 @@ fallbacks = en
 path = locales
 ```
 
+*Refer to the tests directory for further configuration file examples.*
+
 Then you can import the `t` method and get translations immediately:
 
 ```python
@@ -47,7 +49,7 @@ Then you can import the `t` method and get translations immediately:
 from anint import t
 
 
-print(t('greetings.hello'))
+print(t("greetings.hello"))
 ```
 
 **Note**:
@@ -66,31 +68,31 @@ from anint import translations, Translator
 Load translations
 
 ```python
-translations.load('path_to_your_locale_directory')
+translations.load("path_to_your_locale_directory")
 ```
 
 Instantiate `Translator` object
 
 ```python
 my_translator = Translator(
-    locales=['en', 'mn'],
-    locale='mn',
-    fallbacks=['en']
+    locales=["en", "mn"],
+    locale="mn",
+    fallbacks=["en"]
 )
 ```
 
 Call on its `translate` method
 ```python
 >>> my_translator.translate("greetings.hello")
-'Сайн байна уу'
+"Сайн байна уу"
 ```
 
 Change its locale
 
 ```python
->>> my_translator.set_locale('en')
+>>> my_translator.set_locale("en")
 >>> my_translator.translate("greetings.hello")
-'Hello'
+"Hello"
 ```
 
 ## Anint Recipes
@@ -98,11 +100,9 @@ Change its locale
 To add more functionality to the base `Translator` class, one may do the following:
 
 ```python
-# One may place this class at the root
-# of your project directory for easier import.
+# ${{PROJECT_ROOT}}/custom_model.py
 
-
-class TranslatorRecipes(Translator):
+class TranslatorPlus(Translator):
     def before_after(self, before=None, after=None):
         """Returns a tuple of strings as (before, after) of the key translation.
         Both values are None by default and will be assigned as empty strings if not given further arguments.
@@ -150,3 +150,132 @@ class TranslatorRecipes(Translator):
         translation = super(TranslatorRecipes, self).translate(key, *args)
         return _attention + _encapsulate_before + _before + translation + _after + _encapsulate_after
 ```
+
+And to initialize the translator:
+
+```python
+# ${{PROJECT_ROOT}}/custom_model.py
+
+# If any config file exists, the arguments are stored inside this dict.
+from anint.config import instance_data
+from anint import Translator
+
+
+# See above.
+class TranslatorPlus(Translator):
+    .
+    .
+    .
+
+
+# If a config file exists.
+my_translator_class0 = TranslatorPlus(**instance_data)
+
+# Or define it here.
+my_translator_class1 = TranslatorPlus(
+    locales=["en", "mn"],
+    locale="mn",
+    fallbacks=["en"]
+)
+
+t_alias = my_translator_class1.translate
+```
+
+#  Localization Files
+
+## YAML/YML
+
+```yaml
+models:
+  member: "Member"
+attributes:
+  member:
+    name: "Name"
+    student_id: "Student ID"
+    grade: "Grade"
+    department: "Department"
+    course: "Course"
+    role:
+      user: "User"
+      mod: "Mod"
+      admin: "Admin"
+    grades:
+      freshman: "Freshman"
+      sophomore: "Sophomore"
+      junior: "Junior"
+      senior: "Senior"
+      graduate: "Graduate"
+    departments:
+      information_technology: "Information Technology"
+      digital_entertainment: "Digital Entertainment"
+    courses:
+      ai_strategy: "AI Strategy"
+      iot_systems: "IoT Systems"
+      robotics_development: "Robotics Development"
+      game_production: "Game Production"
+      cg_animation: "CG Animation"
+      selection_in_progress: "Selection in Progress"
+```
+
+## JSON
+
+```json
+{
+  "models": {
+    "member": "メンバー"
+  },
+  "attributes": {
+    "member": {
+      "name": "名前",
+      "student_id": "学籍番号",
+      "grade": "学年",
+      "department": "学科",
+      "course": "コース",
+      "role": {
+        "user": "ユーザー",
+        "mod": "Mod",
+        "admin": "管理者"
+      },
+      "grades": {
+        "freshman": "1年生",
+        "sophomore": "2年生",
+        "junior": "3年生",
+        "senior": "4年生",
+        "graduate": "OM"
+      },
+      "departments": {
+        "information_technology": "情報工学科",
+        "digital_entertainment": "デジタルエンタテインメント学科"
+      },
+      "courses": {
+        "ai_strategy": "AI戦略コース",
+        "iot_systems": "IoTシステムコース",
+        "robotics_development": "ロボット開発コース",
+        "game_production": "ゲームプロデュースコース",
+        "cg_animation": "CGアニメーションコース",
+        "selection_in_progress": "選択中"
+      }
+    }
+  }
+}
+```
+
+These locales files are read as dicts.
+As such, when specifying the value to get, the keys to the value are lined together with dots.
+
+```python
+>>> from anint import t
+>>> t("attributes.member.name")
+"Name"
+```
+
+**Notes:**
+
+- If two files with the same locale exist, then a MultipleSameLocaleError exception will be raised.
+- If no value can be found, then the fallback locale will be used. Only if that also fails will a TranslationError be raised.
+
+# Problem?
+
+Actually, I don't expect anyone else other than me to use this package.
+\
+But if you find it useful enough to want to contribute, be my guest!
