@@ -52,7 +52,7 @@ def load(path_to_locale_directory: str) -> None:
         extension = extension[1:]
         if locale not in data:
             match extension:
-                case "yaml":
+                case "yaml" | "yml":
                     data[locale] = load_yaml(str(path_to_locale))
                 case "json":
                     data[locale] = load_json(str(path_to_locale))
