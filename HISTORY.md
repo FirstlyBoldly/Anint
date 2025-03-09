@@ -4,6 +4,10 @@
 
 - Here Be Dragons
 
+## v0.3.1 (2025/03/09)
+
+- Added pytest-cov to the development cycle (Makefile only for now)
+
 ## v0.3.0 (2025/03/09)
 
 - Added functionality to automatically tag and release the latest merge with the main branch

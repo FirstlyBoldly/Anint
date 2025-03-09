@@ -2,12 +2,13 @@
 
 init:
 	python -m pip install -r requirements.txt
+	python -m pip install -r requirements_dev.txt
 
 upgrade:
 	python -m pip install --upgrade anint
 
 test:
-	python -m pytest $(flags) tests
+	python -m pytest -v --no-header --cov=anint tests/
 
 flake8:
 	python -m flake8 src
