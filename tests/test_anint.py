@@ -1,3 +1,5 @@
+"""Tests for Anint."""
+
 # Built-ins
 import os
 import pathlib
@@ -9,8 +11,9 @@ from anint import exceptions as err
 # Third-party
 import pytest
 
-path0: pathlib.Path = pathlib.Path(os.path.dirname(__file__)) / "locales" / "yaml"
-translations.load(str(path0))
+yaml_path: pathlib.Path = pathlib.Path(os.path.dirname(__file__)) / "locales" / "yaml"
+json_path: pathlib.Path = pathlib.Path(os.path.dirname(__file__)) / "locales" / "json"
+translations.load(str(yaml_path))
 
 
 class TestTranslations:

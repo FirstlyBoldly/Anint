@@ -4,6 +4,11 @@
 
 - Here Be Dragons
 
+## v0.3.0 (2025/03/09)
+
+- Added functionality to automatically tag and release the latest merge with the main branch
+- Added more test coverage
+
 ## v0.2.0 (2025/03/09)
 
 - Added support for reading `yml` files

@@ -3,7 +3,9 @@
 __all__: list[str] = ["data", "instance_data"]
 
 # Built-ins
-import configparser, tomllib, os
+import configparser
+import tomllib
+import os
 from configparser import ConfigParser
 from typing import Any, Optional
 
