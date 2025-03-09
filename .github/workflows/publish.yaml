@@ -12,6 +12,9 @@ jobs:
   release-build:
     runs-on: ubuntu-latest
 
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -29,6 +32,11 @@ jobs:
         with:
           name: release-dists
           path: dist/
+
+      - name: Get package version
+        id: get_version
+        run: |
+          echo "version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")" >> "$GITHUB_OUTPUT"
 
   pypi-publish:
     runs-on: ubuntu-latest
@@ -52,3 +60,63 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+
+  github-release:
+    name: >-
+      Sign the Python distribution with Sigstore
+      and upload them to GitHub Release
+    needs: [ release-build, pypi-publish ]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set version variable
+        run: echo "VERSION=${{ needs.release-build.outputs.version }}" >> "$GITHUB_ENV"
+
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: release-dists
+          path: dist/
+
+      - name: Sign the dists with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v3.0.0
+        with:
+          inputs: >-
+            ./dist/*.tar.gz
+            ./dist/*.whl
+
+      - name: Create Git tag
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "Release v$VERSION"
+          git push origin "$VERSION"
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create
+          "$VERSION"
+          --title "$VERSION"
+          --repo "$GITHUB_REPOSITORY"
+          --generate-notes
+
+      - name: Upload artifact signatures to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          gh release upload
+          "$VERSION" dist/**
+          --repo "$GITHUB_REPOSITORY"

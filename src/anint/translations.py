@@ -41,10 +41,11 @@ def load_json(filepath: str) -> dict[str, Any]:
 
 def load(path_to_locale_directory: str) -> None:
     """Load the translation from the given path_to_locale_directory.
+    Any files within the directory that does not end with JSON or YAML or YML are ignored.
 
     :param str path_to_locale_directory: Path to the translation file or directory containing the translation file.
     :return: None.
-    :raise FileNotFoundError: If the requested file does not exist.
+    :raise MultipleSameLocaleError: If more than one file of the same locale is found in the same directory.
     """
     for filepath in os.listdir(path_to_locale_directory):
         locale, extension = os.path.splitext(filepath)
@@ -82,3 +83,9 @@ def get(locale: str, key: str) -> str:
             )
     except KeyError:
         raise TranslationError(key)
+
+
+def flush() -> None:
+    """Flushes any stored translations."""
+    global data
+    data.clear()

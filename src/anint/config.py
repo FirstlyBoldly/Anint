@@ -3,7 +3,9 @@
 __all__: list[str] = ["data", "instance_data"]
 
 # Built-ins
-import configparser, tomllib, os
+import configparser
+import tomllib
+import os
 from configparser import ConfigParser
 from typing import Any, Optional
 
@@ -12,13 +14,12 @@ from .utils import get_file_extension, csv_to_list
 from .exceptions import AnintConfigError
 from .constants import AnintDict
 
+data: dict[str, Any] = {}
+instance_data: dict[str, Any] = {}
+
 
 def fetch_config_file() -> Optional[str]:
-    """Return the absolute path to the highest priority Anint configuration file.
-
-    :return: Absolute path to the highest priority Anint configuration file.
-    :raise AnintConfigError: If no matching config file is found.
-    """
+    """Return the absolute path to the highest priority Anint configuration file."""
     for filepath in [
         "{anint}.ini".format(anint=AnintDict.ANINT),
         ".{anint}.ini".format(anint=AnintDict.ANINT),
@@ -58,7 +59,7 @@ def load_raw_toml(filepath: str) -> dict[str, Any]:
         return {}
 
 
-def load_config() -> dict[str, Any]:
+def load_config(config_path: Optional[str] = None) -> None:
     """Return a dictionary of the Anint configuration.
 
     | An INI configuration file:
@@ -76,17 +77,19 @@ def load_config() -> dict[str, Any]:
     | path: "${PATH_TO_WORKING_DIRECTORY}/tests/locales"
     | }
 
+    :param config_path: Optional path to the configuration file. Will have the highest precedence if given. None by default.
     :return: Dictionary of the loaded Anint configuration. *Expects all keys to have a corresponding value, will assign empty values otherwise.
     :raise AnintConfigError: If the loaded file is not a .ini or .cfg or .toml file.
     """
-    config_data: dict[str, Any] = {}
-    if filepath := fetch_config_file():
+    global data, instance_data
+    filepath: Optional[str] = config_path or fetch_config_file()
+    if filepath:
         filename: str = os.path.basename(filepath)
         extension: str = get_file_extension(filename)
         if extension == "ini" or extension == "cfg":
-            config_data = load_raw_ini(filepath)
+            data = load_raw_ini(filepath)
         elif extension == "toml":
-            config_data = load_raw_toml(filepath)
+            data = load_raw_toml(filepath)
         else:
             raise AnintConfigError(
                 "The following {filename} is not a recognized configuration file format.".format(
@@ -95,19 +98,16 @@ def load_config() -> dict[str, Any]:
             )
 
     # Normalize loaded config data.
-    config_data[AnintDict.LOCALES] = csv_to_list(config_data.get(AnintDict.LOCALES, ""))
-    config_data[AnintDict.LOCALE] = config_data.get(AnintDict.LOCALE, "")
-    config_data[AnintDict.FALLBACKS] = csv_to_list(
-        config_data.get(AnintDict.FALLBACKS, "")
-    )
-    config_data[AnintDict.PATH] = os.path.abspath(config_data.get(AnintDict.PATH, ""))
+    data[AnintDict.LOCALES] = csv_to_list(data.get(AnintDict.LOCALES, []))
+    data[AnintDict.LOCALE] = data.get(AnintDict.LOCALE, "")
+    data[AnintDict.FALLBACKS] = csv_to_list(data.get(AnintDict.FALLBACKS, []))
+    data[AnintDict.PATH] = os.path.abspath(data.get(AnintDict.PATH, ""))
 
-    return config_data
+    instance_data = {
+        key: value
+        for key, value in data.items()
+        if key in [AnintDict.LOCALES, AnintDict.LOCALE, AnintDict.FALLBACKS]
+    }
 
 
-data: dict[str, Any] = load_config()
-instance_data: dict[str, Any] = {
-    key: value
-    for key, value in data.items()
-    if key in [AnintDict.LOCALES, AnintDict.LOCALE, AnintDict.FALLBACKS]
-}
+load_config()
