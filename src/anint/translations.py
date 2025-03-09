@@ -84,6 +84,7 @@ def get(locale: str, key: str) -> str:
     except KeyError:
         raise TranslationError(key)
 
+
 def flush() -> None:
     """Flushes any stored translations."""
     global data

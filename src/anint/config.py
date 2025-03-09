@@ -19,11 +19,7 @@ instance_data: dict[str, Any] = {}
 
 
 def fetch_config_file() -> Optional[str]:
-    """Return the absolute path to the highest priority Anint configuration file.
-
-    :return: Absolute path to the highest priority Anint configuration file.
-    :raise AnintConfigError: If no matching config file is found.
-    """
+    """Return the absolute path to the highest priority Anint configuration file."""
     for filepath in [
         "{anint}.ini".format(anint=AnintDict.ANINT),
         ".{anint}.ini".format(anint=AnintDict.ANINT),
@@ -86,7 +82,7 @@ def load_config(config_path: Optional[str] = None) -> None:
     :raise AnintConfigError: If the loaded file is not a .ini or .cfg or .toml file.
     """
     global data, instance_data
-    filepath: str = config_path or fetch_config_file()
+    filepath: Optional[str] = config_path or fetch_config_file()
     if filepath:
         filename: str = os.path.basename(filepath)
         extension: str = get_file_extension(filename)
